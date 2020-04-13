@@ -11,6 +11,11 @@ namespace ExprEvalNetCore
     {
         private List<char> _mathOperatorsAllowed = new List<char>() { '+', '-', '*', '/', '%', '^' };
 
+        /// <summary>
+        /// Solves Math expressions
+        /// </summary>
+        /// <param name="input">Input string, that contains math expression</param>
+        /// <returns></returns>
         public ExprResult Solve(String input)
         {
             try
@@ -57,7 +62,7 @@ namespace ExprEvalNetCore
                     {
                         operators.Push(inputChar);
                     }
-                    // Closing brace encountered, solve entire brace  
+                    // Closing brace encountered, solving entire brace  
                     else if (inputChar == ')')
                     {
                         while (operators.Peek() != '(')
@@ -68,13 +73,14 @@ namespace ExprEvalNetCore
                     }
                 }
 
-                // Entire expression has been parsed at this point, apply remaining  
-                // ops to remaining values  
+                // Entire expression has been parsed at this point
+                // If there are any operator left, evaulate them
                 while (operators.Count > 0)
                 {
                     values.Push(EvalOperator(operators.Pop(), values.Pop(), values.Pop()));
                 }
 
+                // Last value on values stack should now contain result
                 return new ExprResult() { Error = String.Empty, Value = values.Pop() };
             }
             catch(Exception ex)
@@ -83,6 +89,9 @@ namespace ExprEvalNetCore
             }
         }
 
+        /// <summary>
+        /// Returns true/false, if operator '+' or '-' is used like prefix
+        /// </summary>
         private bool IsPrefix(char op, string input, int index)
         {
             if(op == '+' || op == '-')
@@ -92,6 +101,9 @@ namespace ExprEvalNetCore
             return false;
         }
 
+        /// <summary>
+        /// Evaulates operator with two values
+        /// </summary>
         private double EvalOperator(char op, double value1, double value2)
         {
             switch (op)
@@ -116,6 +128,9 @@ namespace ExprEvalNetCore
             return 0;
         }
 
+        /// <summary>
+        /// Determines precedence between two operators
+        /// </summary>
         private bool HasSecondOpPrecedence(char op1, char op2)
         {
             if (op2 == '(' || op2 == ')')
